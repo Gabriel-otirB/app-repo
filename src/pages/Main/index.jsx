@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Container, Form, SubmitButton, List, DeleteButton, AlertError } from './styles.js';
 import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 import api from '../../services/api.js';
 
 const Main = () => {
-
   const [newRepo, setNewRepo] = useState('');
   const [repositorios, setRepositorios] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -19,23 +19,25 @@ const Main = () => {
       setRepositorios(JSON.parse(repoStorage));
     }
 
-  }, []);
+  }, []); // Apenas na montagem do componente
 
   // DidUpdate // Salvar alterações
   useEffect(() => {
     if (repositorios.length) {
       localStorage.setItem('repos', JSON.stringify(repositorios));
+    } else {
+      // Se o estado estiver vazio, remover o item do localStorage
+      localStorage.removeItem('repos');
     }
-  }, [repositorios]);
+  }, [repositorios]); // Monitorando mudanças no estado
 
   const handleSubmit = useCallback((e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     async function submit() {
       setLoading(true);
       setAlert(null);
       try {
-
         if (newRepo.trim() === '') {
           throw new Error('Você precisa indicar um repositório!');
         }
@@ -50,12 +52,21 @@ const Main = () => {
 
         const data = {
           name: response.data.full_name,
-        }
+        };
 
         setRepositorios(prevRepos => [...prevRepos, data]);
         setNewRepo('');
       } catch (error) {
-        setAlert(error.message); // Exibe mensagem de erro
+        if (error.isAxiosError) {
+          if (error.response && error.response.status === 404) {
+            setAlert('Repositório não encontrado!');
+          } else {
+            setAlert(error.message);
+          }
+        } else {
+          setAlert(error.message);
+        }
+
         console.log(error);
       } finally {
         setLoading(false);
@@ -77,7 +88,6 @@ const Main = () => {
 
   return (
     <Container>
-
       <h1>
         <FaGithub size={25} />
         Meus Repositórios
@@ -92,13 +102,12 @@ const Main = () => {
         />
 
         <SubmitButton loading={loading ? 1 : 0}>
-          {loading ?
-            (<FaSpinner color="#FFF" size={14} />
-            ) : (
-              <FaPlus color="#FFF" size={14} />
-            )}
+          {loading ? (
+            <FaSpinner color="#FFF" size={14} />
+          ) : (
+            <FaPlus color="#FFF" size={14} />
+          )}
         </SubmitButton>
-
       </Form>
 
       {alert && <AlertError>{alert}</AlertError>}
@@ -112,15 +121,14 @@ const Main = () => {
               </DeleteButton>
               {repo.name}
             </span>
-            <a href="">
+            <Link to={`/repositorio/${encodeURIComponent(repo.name)}`}>
               <FaBars size={20} />
-            </a>
+            </Link>
           </li>
         ))}
       </List>
-
     </Container>
-  )
-}
+  );
+};
 
 export default Main;
