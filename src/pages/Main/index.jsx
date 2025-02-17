@@ -101,7 +101,7 @@ const Main = () => {
           onChange={handleInputChange}
         />
 
-        <SubmitButton loading={loading ? 1 : 0}>
+        <SubmitButton loading={loading}>
           {loading ? (
             <FaSpinner color="#FFF" size={14} />
           ) : (

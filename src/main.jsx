@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Main />} />
-          <Route path="/repositorio/:repositorio" element={<Repositorio />} />
+          <Route path="/repositorio/:repoName" element={<Repositorio />} />
         </Route>
       </Routes>
     </BrowserRouter>

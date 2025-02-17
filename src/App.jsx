@@ -5,18 +5,9 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <header>
-        <h1>Meu Projeto</h1>
-        {/* Aqui pode entrar um Navbar futuramente */}
-      </header>
-
       <main>
-        <Outlet /> {/* Esse Outlet será substituído pela página ativa */}
+        <Outlet />
       </main>
-
-      <footer>
-        <p>© 2025 Meu Projeto</p>
-      </footer>
     </>
   );
 }
